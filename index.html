@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap">
 <!-- ?v — версія файлу. Змінюйте число після кожної правки CSS чи JS,
      інакше браузери покупців можуть лишитися на старій версії. -->
-<link rel="stylesheet" href="styles.css?v=88">
+<link rel="stylesheet" href="styles.css?v=89">
 </head>
 <body>
 
@@ -134,13 +134,21 @@
   <!-- Два розміри на кожну орієнтацію: вузький телефон не має тягнути
        картинку, розраховану на великий екран. Квадратний кадр для
        телефона — окремий файл, а не обрізаний десктопний: інакше
-       модель і флакон не вміщаються в кадр. -->
+       модель і флакон не вміщаються в кадр.
+
+       Десктопний кадр навмисно ширший за оригінал — 2.4 замість 16:9.
+       Вихідне фото при object-fit:cover на широкому невисокому вікні
+       (а таких у ноутбуків більшість) обрізалося згори й знизу, і з
+       кадру зникали помпа та туфля. Ліворуч доточено темне поле — те
+       саме, що й на краю фото, — а object-position тримає праву
+       частину, де модель і флакон. Тепер обрізається порожнє поле,
+       під яким і так лежить текст. -->
   <picture class="hero__media">
     <source media="(max-width: 640px)" sizes="100vw"
             srcset="image/bf-mobile-720.jpg 720w, image/bf-mobile-1080.jpg 1080w">
-    <img src="image/bf-desktop-1920.jpg" sizes="100vw"
-         srcset="image/bf-desktop-1280.jpg 1280w, image/bf-desktop-1920.jpg 1920w"
-         width="1920" height="1080" decoding="async"
+    <img src="image/bf-desktop-wide-2560.jpg" sizes="100vw"
+         srcset="image/bf-desktop-wide-1706.jpg 1706w, image/bf-desktop-wide-2560.jpg 2560w"
+         width="2560" height="1067" decoding="async"
          alt="Дівчина з піною на руках у русі поряд із великим флаконом мила-піни Purrfect Noir Essence серед піни.">
   </picture>
 
@@ -856,7 +864,7 @@
   <a class="btn btn--sm" href="#zamovlennya">Оформити</a>
 </div>
 
-<script src="script.js?v=88" defer></script>
-<script src="i18n.js?v=88" defer></script>
+<script src="script.js?v=89" defer></script>
+<script src="i18n.js?v=89" defer></script>
 </body>
 </html>
