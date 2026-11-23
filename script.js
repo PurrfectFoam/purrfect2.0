@@ -22,7 +22,43 @@
      треба обидва файли разом — інакше покупець побачить одну
      суму, а до оплати піде інша.
      ========================================================== */
-  const PRICE = 499;
+  /* ---------- Чорна пʼятниця 2026 ----------
+     Акція вмикається й вимикається сама, за датою. Межі задані в UTC,
+     бо сервер живе саме в ньому: Київ у листопаді — UTC+2, отже
+       24.11 00:00 Київ = 23.11 22:00 UTC
+       01.12 00:00 Київ = 30.11 22:00 UTC
+     Та сама пара дат і та сама ціна продубльовані в api/_catalog.mjs.
+     Розбіжність між файлами означала б, що покупець бачить одну ціну,
+     а платить іншу, тож правити завжди обидва. */
+  const PROMO_FROM = Date.UTC(2026, 10, 23, 22, 0, 0);
+  const PROMO_TILL = Date.UTC(2026, 10, 30, 22, 0, 0);
+  const PRICE_FULL = 499;
+  const PRICE_PROMO = 349;
+
+  const PROMO = Date.now() >= PROMO_FROM && Date.now() < PROMO_TILL;
+  const PRICE = PROMO ? PRICE_PROMO : PRICE_FULL;
+
+  /* Ціна для вітрини. Під час акції поруч із новою показуємо закреслену
+     стару — так вигода читається без жодних пояснень. Поза акцією це
+     просто ціна, тож розмітка не засмічується зайвими тегами. */
+  const priceHTML = () => (PROMO
+    ? `<s class="price-was">${PRICE_FULL} ₴</s> <b class="price-now">${PRICE_PROMO} ₴</b>`
+    : `${PRICE} ₴`);
+
+  /* Клас на <html> вмикає акційне оформлення в CSS: ховає банер набору
+     й пункт FAQ про нього. Скрипт із defer виконується після розбору
+     розмітки, а банер лежить нижче першого екрана — покупець не встигає
+     побачити, як той зникає. Статичні ціни в розмітці теж підмінюємо
+     звідси, бо HTML про дати нічого не знає. */
+  if (PROMO) {
+    document.documentElement.classList.add('promo');
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[data-price-tag]').forEach((el) => {
+        el.innerHTML = priceHTML();
+      });
+    });
+  }
+
   const VOLUME = '300 мл';
 
   /* `tagline` — три слова через крапку, з них же збираються теги-пігулки
@@ -87,14 +123,18 @@
   ];
 
   /* Знижка за набір. П'ять флаконів — це повний набір ароматів,
-     саме на ньому вмикаються −10%: 2495 ₴ → 2245 ₴. */
+     саме на ньому вмикаються −10%: 2495 ₴ → 2245 ₴.
+
+     На час Чорної п'ятниці набір вимикається повністю: −30% діє на кожен
+     флакон окремо, тож окрема знижка за набір втрачає сенс і лише плутала б
+     покупця двома акціями одночасно. */
   const TIERS = [
     { min: 5, rate: 0.10 }
   ];
 
   /* Ціна набору рахується з тих самих констант, а не вписана руками —
      інакше після зміни ціни банер і картка показували б старі цифри. */
-  const BUNDLE_RATE = TIERS.find((t) => PRODUCTS.length >= t.min)?.rate || 0;
+  const BUNDLE_RATE = PROMO ? 0 : (TIERS.find((t) => PRODUCTS.length >= t.min)?.rate || 0);
   const BUNDLE_SUB = PRODUCTS.length * PRICE;
   const BUNDLE_PRICE = BUNDLE_SUB - Math.round(BUNDLE_SUB * BUNDLE_RATE);
 
@@ -349,8 +389,12 @@
      крім одного, де лише 1, — це один набір, а не два. Усе понад цей
      мінімум — вже не набір, а окремі флакони за повною ціною. Рахується
      однаково, чи набір зібрано карточками поштучно, чи натиснуто «Додати
-     набір»: обидва шляхи однаково піднімають мінімум по всіх ароматах. */
-  const setCount = () => Math.min(...PRODUCTS.map((p) => cart[p.id] || 0));
+     набір»: обидва шляхи однаково піднімають мінімум по всіх ароматах.
+
+     Під час Чорної п'ятниці повертаємо нуль. Цього достатньо, щоб набір
+     зник із кошика цілком: `linesHTML()` при нулі малює звичайні рядки,
+     а `totals()` не нараховує знижки. Переписувати рендер не потрібно. */
+  const setCount = () => (PROMO ? 0 : Math.min(...PRODUCTS.map((p) => cart[p.id] || 0)));
 
   const bundleSum = (n) => {
     const s = n * BUNDLE_SUB;
@@ -677,7 +721,7 @@
         main.textContent = money(qty * PRICE);
         note.textContent = `${qty} × ${PRICE} ₴ · ${VOLUME}`;
       } else {
-        main.textContent = `${PRICE} ₴`;
+        main.innerHTML = priceHTML();
         note.textContent = `за флакон ${VOLUME}`;
       }
     }
@@ -771,7 +815,7 @@
             <button class="product__name-btn" type="button" data-more="${p.id}">${esc(p.name)}</button>
           </h3>
           <p class="product__tagline">${esc(p.tagline)}</p>
-          <p class="product__meta">${VOLUME} <span>·</span> ${PRICE} ₴</p>
+          <p class="product__meta">${VOLUME} <span>·</span> ${priceHTML()}</p>
           <div class="product__buy">
             <!-- сюди renderCart підставляє або кнопку, або лічильник -->
             <div class="product__action" data-action="${p.id}"></div>
@@ -825,7 +869,7 @@
             <div class="pm__panel">
               <div class="pm__price-row">
                 <p class="pm__price" data-modal-price="${p.id}">
-                  <span data-price-main>${PRICE} ₴</span><small data-price-note>за флакон ${VOLUME}</small>
+                  <span data-price-main>${priceHTML()}</span><small data-price-note>за флакон ${VOLUME}</small>
                 </p>
               </div>
 
@@ -2071,6 +2115,20 @@
         if (!res.ok || !json.ok) throw new Error(json.error || `Сервер відповів ${res.status}`);
 
         if (json.wayforpay) {
+          /* Сервер рахує суму сам, і саме його цифра піде в банк. Якщо
+             вона розійшлася з тією, що покупець бачить у кошику, —
+             зупиняємось і просимо оновити сторінку. Найімовірніша
+             причина: сторінка була відкрита, коли акція почалася або
+             закінчилась, або годинник на пристрої збився. Краще зайве
+             оновлення, ніж списання суми, якої людина не очікувала. */
+          const serverSum = Number(json.wayforpay?.fields?.amount);
+          if (Number.isFinite(serverSum) && serverSum !== totals().grand) {
+            status.textContent = 'Ціна змінилася, поки ви оформлювали замовлення. Оновіть сторінку й перевірте кошик.';
+            status.classList.add('is-err');
+            status.scrollIntoView({ ...scrollOpts, block: 'center' });
+            return;
+          }
+
           try {
             await openWayforpay(json.wayforpay, payDone);
             submit.hidden = true;

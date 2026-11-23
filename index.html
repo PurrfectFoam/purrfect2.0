@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap">
 <!-- ?v — версія файлу. Змінюйте число після кожної правки CSS чи JS,
      інакше браузери покупців можуть лишитися на старій версії. -->
-<link rel="stylesheet" href="styles.css?v=86">
+<link rel="stylesheet" href="styles.css?v=87">
 </head>
 <body>
 
@@ -151,7 +151,10 @@
             <path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
-        <p class="hero__price">300 мл <span>·</span> 499 грн</p>
+        <!-- Ціну на час акції підміняє script.js за атрибутом data-price-tag:
+             розмітка про дати не знає, а дублювати їх у третьому місці
+             не можна — розійдуться. -->
+        <p class="hero__price">300 мл <span>·</span> <span data-price-tag>499 грн</span></p>
       </div>
     </div>
 
@@ -645,7 +648,7 @@
         натискання на дозатор.</p>
       </details>
 
-      <details>
+      <details data-faq-bundle>
         <summary>Як діє знижка на набір?</summary>
         <p>Знижка 10% застосовується в кошику автоматично, коли ви додаєте всі
         п'ять ароматів — по одному флакону кожного. Промокод вводити не потрібно.
@@ -786,7 +789,7 @@
   <a class="btn btn--sm" href="#zamovlennya">Оформити</a>
 </div>
 
-<script src="script.js?v=86" defer></script>
-<script src="i18n.js?v=86" defer></script>
+<script src="script.js?v=87" defer></script>
+<script src="i18n.js?v=87" defer></script>
 </body>
 </html>
