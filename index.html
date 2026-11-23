@@ -28,7 +28,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap">
 <!-- ?v — версія файлу. Змінюйте число після кожної правки CSS чи JS,
      інакше браузери покупців можуть лишитися на старій версії. -->
-<link rel="stylesheet" href="styles.css?v=87">
+<link rel="stylesheet" href="styles.css?v=88">
 </head>
 <body>
 
@@ -113,6 +113,73 @@
 </div>
 
 <main>
+
+<!-- ============================================================
+     2а. ЧОРНА П'ЯТНИЦЯ 2026 — ТИМЧАСОВИЙ ПЕРШИЙ ЕКРАН
+     ============================================================
+     Свідомо зроблений на тих самих класах, що й звичайний перший
+     екран: уся поведінка — пропорції, затемнення, перенос тексту
+     під фото на телефоні — успадковується, а не пишеться заново.
+     Власних стилів тут лише кілька рядків, усі в кінці styles.css.
+
+     За замовчуванням блок прихований. Показує його script.js,
+     додаючи .promo на <html> у межах дат акції; тоді ж ховається
+     звичайний перший екран. Без JavaScript відвідувач і пошуковик
+     бачать звичайну сторінку — так і задумано.
+
+     Після 30 листопада секцію можна видалити цілком.
+     ============================================================ -->
+<section class="hero hero--bf" aria-label="Чорна п'ятниця: знижка 30% на весь асортимент">
+
+  <!-- Два розміри на кожну орієнтацію: вузький телефон не має тягнути
+       картинку, розраховану на великий екран. Квадратний кадр для
+       телефона — окремий файл, а не обрізаний десктопний: інакше
+       модель і флакон не вміщаються в кадр. -->
+  <picture class="hero__media">
+    <source media="(max-width: 640px)" sizes="100vw"
+            srcset="image/bf-mobile-720.jpg 720w, image/bf-mobile-1080.jpg 1080w">
+    <img src="image/bf-desktop-1920.jpg" sizes="100vw"
+         srcset="image/bf-desktop-1280.jpg 1280w, image/bf-desktop-1920.jpg 1920w"
+         width="1920" height="1080" decoding="async"
+         alt="Дівчина з піною на руках у русі поряд із великим флаконом мила-піни Purrfect Noir Essence серед піни.">
+  </picture>
+
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <div class="hero__inner">
+    <div class="hero__copy">
+      <p class="bf__kicker">Black Friday</p>
+
+      <!-- Перший рядок навмисно без примусових розривів: він довший за
+           гасло звичайного першого екрана, і на вузьких екранах жорсткі
+           переноси виштовхували текст за межі колонки. Окремим блоком
+           винесено лише «Black Friday». -->
+      <h2 class="hero__title">
+        Коли твій улюблений колір —
+        <span class="hero__title-line"><em>Black Friday</em></span>
+      </h2>
+
+      <p class="bf__offer">−30% на весь асортимент Purrfect</p>
+
+      <p class="bf__price"><s>499 грн</s> <b>349 грн</b></p>
+      <p class="bf__dates">24–30 листопада 2026 року включно</p>
+
+      <div class="hero__actions">
+        <a class="btn" href="#aromaty">
+          <span>Обрати аромат</span>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
+            <path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <p class="bf__fine">
+        На всі аромати та будь-яку кількість.
+        Замовляйте на сайті або в Direct Instagram.
+      </p>
+    </div>
+  </div>
+</section>
 
 <!-- ============================================================
      2. ПЕРШИЙ ЕКРАН
@@ -789,7 +856,7 @@
   <a class="btn btn--sm" href="#zamovlennya">Оформити</a>
 </div>
 
-<script src="script.js?v=87" defer></script>
-<script src="i18n.js?v=87" defer></script>
+<script src="script.js?v=88" defer></script>
+<script src="i18n.js?v=88" defer></script>
 </body>
 </html>
